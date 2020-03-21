@@ -1,0 +1,310 @@
+openapi: '3.0.2'
+info:
+  title: The Shelves API
+  version: '1'
+paths:
+  /actuator/health:
+    get:
+      summary: Return a object with a list of Health Check
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  /stores:
+    get:
+      summary: Return a object with a list of nearby stores
+      parameters:
+        - in: query
+          name: lat
+          required: true
+          schema:
+            type: number
+        - in: query
+          name: long
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoresResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    post:
+      summary: Creates an not existing store
+      requestBody:
+        $ref: '#/components/requestBodies/StoreRequestBody'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  /stores/{store}:
+    get:
+      summary: Return a object with a specific store
+      parameters:
+        - in: path
+          name: store
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  /stores/{store}/shelves:
+    get:
+      summary: Return a object with a list of shelves of a store
+      parameters:
+        - in: path
+          name: store
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShelvesResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  /stores/{store}/shelves/{shelf}:
+    get:
+      summary: Return a object with a specific shelf of a store
+      parameters:
+        - in: path
+          name: store
+          required: true
+          schema:
+            type: number
+        - in: path
+          name: shelf
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShelfResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+components:
+  responses:
+    NotFound:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: The request body was not understood by the server
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Unauthorized to access this resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    MethodNotAllowed:
+      description: Method not Allowed for this resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    UnsupportedMediaType:
+      description: Media Type not supported
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ServiceUnavailable:
+      description: Service Unavailable
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Link:
+      type: object
+      properties:
+        rel:
+          type: string
+        href:
+          type: string
+          format: uri
+    PageMetaData:
+      type: object
+      properties:
+        size:
+          type: integer
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        number:
+          type: integer
+    StoreType:
+      type: string
+      enum:
+        - SUPERMARKET
+        - GROCERY_STORE
+        - SMALL_BUSINESS
+        - SMALL_PRODUCER  
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
+    StoreRequest:
+      type: object
+      properties:
+        lat:
+          type: number
+        long:
+          type: number
+        name:
+          type: string
+        storeType:
+          $ref: '#/components/schemas/StoreType'
+    StoreResponse:
+      allOf:
+        - $ref: '#/components/schemas/StoreRequest'
+        - type: object
+          properties:
+            id:
+              type: string
+              pattern: '^[0-9a-z]{24}$'
+              example: '507f191e810c19729de860ea'
+            createdAt:
+              type: string
+              format: date-time
+    StoresResponse:
+      type: object
+      properties:
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/StoreResponse'
+        pageMetadata:
+          $ref: '#/components/schemas/PageMetaData'
+    ShelfResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          pattern: '^[a-z/-]{1,32}$'
+          example: 'toilet-paper'
+        updatedAt:
+          type: string
+          format: date-time
+        available:
+          type: boolean
+          example: true
+        name:
+          type: string
+          example: Toilet Paper
+    ShelvesResponse:
+      type: object
+      properties:
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShelfResponse'
+        pageMetadata:
+          $ref: '#/components/schemas/PageMetaData'       
+  requestBodies:
+    StoreRequestBody:
+      content:
+        application/json:
+          schema: 
+            $ref: '#/components/schemas/StoreRequest'
