@@ -14,22 +14,18 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/v1/stores")
 @RequiredArgsConstructor
+@RequestMapping("/v1/stores")
 public class StoresController {
 
-    private final StoreService storeService;
+    private final StoresService storesService;
 
     @GetMapping
     public HttpEntity<?> collection(@RequestParam(name = "lat", required = true) final double latitude, 
     @RequestParam(name = "long", required = true) final double longitude, 
-    final Pageable pageable, 
-        final PagedResourcesAssembler<Store> pagedResourcesAssembler) {
-
-            Page<Store> page = storeService.getLocationByLatLong(latitude, longitude, pageable);
+    final Pageable pageable) {
             
-            PagedModel<StoreRepresentation> model = 
-                pagedResourcesAssembler.toModel(page, new StoreRepresentationModelAssembler());
+            PagedModel<StoreRepresentation> model = storesService.getLocationByLatLong(latitude, longitude, pageable);
 
             return ResponseEntity.ok(model);
     }
