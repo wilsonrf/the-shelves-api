@@ -11,8 +11,8 @@ class StoreRepresentation extends RepresentationModel<StoreRepresentation> {
     
     private String id;
     private String name;
-    private String latitude;
-    private String longitude;
+    private Double latitude;
+    private Double longitude;
     private String createdAt;
 
 }

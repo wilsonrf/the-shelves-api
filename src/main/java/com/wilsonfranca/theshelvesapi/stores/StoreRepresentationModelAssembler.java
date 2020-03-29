@@ -14,8 +14,8 @@ public class StoreRepresentationModelAssembler extends RepresentationModelAssemb
         return StoreRepresentation
             .builder()
             .id(store.getId().toHexString())
-            .latitude(String.valueOf(store.getLocation().getY()))
-            .longitude(String.valueOf(store.getLocation().getX()))
+            .latitude(store.getLocation().getY())
+            .longitude(store.getLocation().getX())
             .name(store.getName())
             .createdAt(store.getCreatedAt().toString())
             .build();
